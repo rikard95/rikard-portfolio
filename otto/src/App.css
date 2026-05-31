@@ -289,10 +289,10 @@
 }
 
 /* Match nav link hover colors to the send/back button hovers */
-.nav a[href="/contact.html"]:hover {
+.nav a[href="/contact"]:hover {
   color: rgb(52,141,0);
 }
-.nav a[href="/about.html"]:hover {
+.nav a[href="/about"]:hover {
   color: rgb(0,183,255);
 }
 
