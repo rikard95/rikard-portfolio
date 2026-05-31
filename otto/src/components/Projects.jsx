@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import ProjectCard from './ProjectCard'
 import sampleImg from '../assets/RN.png'
 
@@ -17,7 +17,7 @@ const FALLBACK_PROJECTS = [
 export default function Projects() {
     const [projects, setProjects] = useState(FALLBACK_PROJECTS)
 
-    
+    const fetchRef = useRef(null)
 
     useEffect(() => {
         let mounted = true
@@ -155,16 +155,35 @@ export default function Projects() {
             }
         }
 
+        // expose the fetch function for manual refresh
+        fetchRef.current = fetchAllRepos
+
         fetchAllRepos()
 
         return () => { mounted = false }
     }, [])
 
-    
+    const handleRefresh = async () => {
+        try {
+            if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem('projects_cache_v1')
+        } catch (e) {
+            // ignore
+        }
+        setProjects(FALLBACK_PROJECTS)
+        if (fetchRef.current) await fetchRef.current()
+    }
 
     return (
         <section id="projects" className="projects container">
-            <h2>My Projects</h2>
+            <div className="projects-header">
+                <h2>My Projects</h2>
+                <button className="refresh-projects" onClick={handleRefresh} aria-label="Refresh projects" title="Refresh projects">
+                    <svg className="refresh-icon" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 6V4l-3 3 3 3V8c2.76 0 5 2.24 5 5 0 .9-.24 1.74-.66 2.48l1.46 1.46C18.5 15.9 19 14.99 19 14c0-3.87-3.13-7-7-7z" />
+                        <path d="M6.66 9.52C6.24 10.26 6 11.1 6 12c0 3.87 3.13 7 7 7v2l3-3-3-3v2c-2.76 0-5-2.24-5-5 0-.9.24-1.74.66-2.48L6.66 9.52z" />
+                    </svg>
+                </button>
+            </div>
             <div className="projects-grid">
                 {projects.map((p) => (
                     <ProjectCard key={p.title} project={p} />
