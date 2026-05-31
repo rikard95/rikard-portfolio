@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact — Rikard</title>
+  <link rel="stylesheet" href="/src/index.css">
+  <link rel="stylesheet" href="/src/App.css">
+</head>
+<body>
+  <main class="container about-page">
+    <div style="max-width:800px;margin:0 auto">
+      <h1>Contact</h1>
+      <p>If you'd like to collaborate, hire me, or just say hi — drop a message below.</p>
+
+      <form id="contact-form" class="contact-form">
+        <label>
+          Name
+          <input name="name" required />
+        </label>
+        <label>
+          Email
+          <input name="email" type="email" required />
+        </label>
+        <label>
+          Message
+          <textarea name="message" rows="6" required></textarea>
+        </label>
+        <div class="form-row">
+          <button type="submit" class="counter">Send</button>
+          <button class="home" type="button" onclick="location.href='/'">Back to home</button>
+          <div id="status" class="status"></div>
+        </div>
+      </form>
+    </div>
+
+    <style>
+      .about-page{min-height:calc(100svh - 80px);display:flex;align-items:center}
+      .about-page > div{width:100%}
+
+      .contact-form{display:grid;gap:12px}
+      .contact-form label{display:flex;flex-direction:column;text-align:left;font-weight:500}
+      .contact-form input,.contact-form textarea{margin-top:8px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-h)}
+      .form-row{display:flex;gap:12px;align-items:center;margin-top:8px}
+      .about-page .home{display:inline-block;margin-top:0;padding:8px 12px;border:1px solid var(--border);border-radius:8px;text-decoration:none;color:var(--text);background:transparent}
+
+      @media (max-width:720px){
+        .about-page{min-height:unset}
+        .form-row{flex-direction:column;align-items:flex-start}
+      }
+    </style>
+
+    <script>
+      (function(){
+        const form = document.getElementById('contact-form');
+        const statusEl = document.getElementById('status');
+        form.addEventListener('submit', function(e){
+          e.preventDefault();
+          const data = new FormData(form);
+          const payload = Object.fromEntries(data.entries());
+          if(!payload.name || !payload.email || !payload.message){
+            statusEl.textContent = 'Please fill all fields.';
+            return;
+          }
+          statusEl.textContent = 'Sending...';
+              setTimeout(()=>{
+            console.log('Contact submitted', payload);
+            statusEl.textContent = 'Thanks — I received your message!';
+            form.reset();
+          },800);
+        });
+      })();
+    </script>
+  </main>
+</body>
+</html>

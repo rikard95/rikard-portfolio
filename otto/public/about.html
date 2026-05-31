@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>About — Rikard</title>
+  <link rel="stylesheet" href="/src/index.css">
+  <link rel="stylesheet" href="/src/App.css">
+</head>
+<body>
+  <main class="container about-page">
+    <div class="about-hero" style="display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start">
+      <div>
+        <div class="about-card">
+          <h1>Hi, I'm Rikard.</h1>
+
+          <p>I am a full-stack developer based in Gothenburg, Sweden, with roots in the creative world. For me, programming and music production share the exact same DNA: taking a blank canvas, structuring the logic, and building something that feels seamless and alive.</p>
+
+          <p>My technical sweet spot is a modern, serverless stack, where I primarily build with React, Next.js, TypeScript, and Firebase. I am driven by creating fast, scalable web applications. Recently, I’ve spent my time developing complex scheduling and onboarding systems for AI-driven platforms, as well as building my own Micro SaaS projects.</p>
+
+          <p>When I’m not optimizing code, you’ll probably find me in the studio producing lo-fi and electronic beats, or unwinding with a good roguelite game.</p>
+
+          <p>I’m always looking for exciting new projects and teams to grow with. Let’s build something great together!</p>
+
+          <div class="actions">
+            <a class="counter" href="/contact.html">Get in touch</a>
+            <button class="home" type="button" onclick="location.href='/'">Back to home</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="about-side">
+        <div class="side-inner">
+          <div class="profile-blob">
+            <img src="/rikard.png" alt="Rikard" class="profile-img" />
+          </div>
+          <div class="role">Frontend & Full-stack</div>
+
+          <div class="side-block">
+            <h3>Skills</h3>
+            <ul class="skills-list">
+              <li><span class="badge">HTML</span></li>
+              <li><span class="badge">CSS</span></li>
+              <li><span class="badge">JavaScript</span></li>
+              <li><span class="badge">TypeScript</span></li>
+              <li><span class="badge">React</span></li>
+              <li><span class="badge">Next.js</span></li>
+              <li><span class="badge">Vite</span></li>
+              <li><span class="badge">Node.js</span></li>
+
+              <li class="more-skill"><span class="badge">.NET</span></li>
+              <li class="more-skill"><span class="badge">Angular</span></li>
+              <li class="more-skill"><span class="badge">C#</span></li>
+              <li class="more-skill"><span class="badge">CRUD</span></li>
+              <li class="more-skill"><span class="badge">Docker</span></li>
+              <li class="more-skill"><span class="badge">Figma</span></li>
+              <li class="more-skill"><span class="badge">Firebase</span></li>
+              <li class="more-skill"><span class="badge">GitHub</span></li>
+              <li class="more-skill"><span class="badge">Insomnia</span></li>
+              <li class="more-skill"><span class="badge">Jira</span></li>
+              <li class="more-skill"><span class="badge">MongoDB</span></li>
+              <li class="more-skill"><span class="badge">MySQL</span></li>
+              <li class="more-skill"><span class="badge">PHP</span></li>
+              <li class="more-skill"><span class="badge">Postman</span></li>
+              <li class="more-skill"><span class="badge">Python</span></li>
+              <li class="more-skill"><span class="badge">Responsive Design</span></li>
+              <li class="more-skill"><span class="badge">REST APIs</span></li>
+              <li class="more-skill"><span class="badge">Tailwind CSS</span></li>
+              <li class="more-skill"><span class="badge">Trello</span></li>
+              <li class="more-skill"><span class="badge">Vercel</span></li>
+            </ul>
+            <div style="margin-top:10px">
+              <button id="toggle-skills" class="counter" type="button">See more</button>
+            </div>
+          </div>
+
+          <div class="side-block">
+            <h3>Recent</h3>
+            <ul class="recent-list">
+              <li><a href="https://rikardnilsson.vercel.app/" target="_blank" rel="noopener noreferrer">Svenska portfolio</a></li>
+              <li>AI scheduling platform (private)</li>
+              <li>Micro SaaS prototypes</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section style="margin-top:28px">
+      <h2>Also into music</h2>
+      <p>I produce lo-fi and electronic beats in my free time — I approach tracks with the same iterative craft as code.</p>
+    </section>
+
+    <style>
+      .badge{display:inline-flex;align-items:center;justify-content:center;min-width:110px;height:36px;padding:0 12px;border-radius:999px;background:var(--social-bg);color:var(--text-h);font-weight:600}
+      #toggle-skills {
+        min-width:110px;
+        height:36px;
+        padding:0 12px;
+        border-radius:999px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        background:transparent;
+        border:1px solid var(--border);
+        color:var(--text);
+        font-weight:600;
+        font-size:14px;
+        box-shadow:none;
+        cursor:pointer;
+      }
+      #toggle-skills:hover{background:rgba(0,0,0,0.03)}
+      .side-block #toggle-skills.counter{background:transparent;border:1px solid var(--border);color:var(--text);box-shadow:none}
+      .skills-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:start}
+      .skills-list li{list-style:none}
+      .skills-list li.more-skill{display:none}
+      .skills-list.expanded li.more-skill{display:list-item}
+      .about-hero h1{font-size:40px;margin-bottom:8px}
+      .about-page .home{display:inline-block;margin-top:0;padding:8px 12px;border:1px solid var(--border);border-radius:8px;text-decoration:none;color:var(--text);background:transparent}
+      .about-page .actions{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+      .about-page .counter{margin-bottom:0}
+
+      .about-page{padding-top:12vh;padding-bottom:12vh}
+      .about-page > div{width:100%}
+
+      .about-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:22px 24px;box-shadow:var(--shadow)}
+      .about-card p{margin:14px 0;color:var(--text)}
+
+      .about-side{justify-self:end}
+      .about-side .side-inner{position:sticky;top:96px;text-align:center;width:100%}
+      .profile-blob{width:160px;height:160px;margin:0 auto 12px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:var(--accent-bg);color:var(--accent);font-weight:600;font-size:28px;overflow:hidden}
+      .profile-img{width:100%;height:100%;object-fit:cover;display:block;border-radius:18px}
+      .role{margin-top:8px;color:var(--text)}
+      .side-block{margin-top:18px;text-align:left}
+      .side-block h3{margin:8px 0}
+      .skills-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+      .recent-list{padding-left:16px;margin:0}
+
+      @media (max-width:820px){
+        .about-hero{grid-template-columns:1fr;}
+        .profile-blob{margin-bottom:18px}
+        .about-page{padding-top:48px;padding-bottom:48px}
+        .about-side .side-inner{position:static}
+      }
+    </style>
+    <script>
+      (function(){
+        const btn = document.getElementById('toggle-skills');
+        if(!btn) return;
+        const ul = document.querySelector('.skills-list');
+        btn.addEventListener('click', () => {
+          const expanded = ul.classList.toggle('expanded');
+          btn.textContent = expanded ? 'See less' : 'See more';
+        });
+      })();
+    </script>
+  </main>
+</body>
+</html>
