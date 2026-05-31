@@ -13,8 +13,8 @@ export default function Header() {
                     </div>
                 </div>
                 <nav className="nav">
-                    <Link to="/about.html">About</Link>
-                    <Link to="/contact.html">Contact</Link>
+                    <Link to="/about">About</Link>
+                    <Link to="/contact">Contact</Link>
                 </nav>
             </div>
         </header>

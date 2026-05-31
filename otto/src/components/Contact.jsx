@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 export default function Contact() {
     const [form, setForm] = useState({ name: '', email: '', message: '' })
@@ -19,7 +20,7 @@ export default function Contact() {
             setStatus('Please fill all fields correctly.')
             return
         }
-        
+
         setStatus('Sending...')
 
         try {
@@ -44,26 +45,31 @@ export default function Contact() {
     }
 
     return (
-        <section id="contact" className="contact container">
-            <h2>Contact</h2>
-            <form className="contact-form" onSubmit={handleSubmit}>
-                <label>
-                    Name
-                    <input name="name" value={form.name} onChange={update} />
-                </label>
-                <label>
-                    Email
-                    <input name="email" value={form.email} onChange={update} />
-                </label>
-                <label>
-                    Message
-                    <textarea name="message" value={form.message} onChange={update} rows={5} />
-                </label>
-                <div className="form-row">
-                    <button type="submit" className="counter">Send</button>
-                    <div className="status">{status}</div>
-                </div>
-            </form>
-        </section>
+        <main className="container about-page">
+            <div style={{ maxWidth: 800, margin: '0 auto' }}>
+                <h1>Contact</h1>
+                <p>If you'd like to collaborate, hire me, or just say hi — drop a message below.</p>
+
+                <form id="contact-form" className="contact-form" onSubmit={handleSubmit}>
+                    <label>
+                        Name
+                        <input name="name" value={form.name} onChange={update} required />
+                    </label>
+                    <label>
+                        Email
+                        <input name="email" type="email" value={form.email} onChange={update} required />
+                    </label>
+                    <label>
+                        Message
+                        <textarea name="message" value={form.message} onChange={update} rows={6} required />
+                    </label>
+                    <div className="form-row">
+                        <button type="submit" className="counter">Send</button>
+                        <Link className="home" to="/">Back to home</Link>
+                        <div className="status">{status}</div>
+                    </div>
+                </form>
+            </div>
+        </main>
     )
 }
