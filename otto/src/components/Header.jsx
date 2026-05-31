@@ -12,8 +12,8 @@ export default function Header() {
                     </div>
                 </div>
                 <nav className="nav">
-                    <a href="/about.html">About</a>
-                    <a href="/contact.html">Contact</a>
+                    <a href="/about">About</a>
+                    <a href="/contact">Contact</a>
                 </nav>
             </div>
         </header>
