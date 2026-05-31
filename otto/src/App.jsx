@@ -3,7 +3,7 @@ import Header from './components/Header'
 import Projects from './components/Projects'
 import About from './components/About'
 import Contact from './components/Contact'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Link } from 'react-router-dom'
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
-      <footer className="footer">© {new Date().getFullYear()} Rikard Nilsson — <a href="/contact.html">Contact me</a></footer>
+      <footer className="footer">© {new Date().getFullYear()} Rikard Nilsson — <Link to="/contact">Contact me</Link></footer>
     </div>
   )
 }
