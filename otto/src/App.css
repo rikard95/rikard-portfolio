@@ -21,6 +21,11 @@
   }
 }
 
+/* Define accent orange once so header and cards match exactly */
+:root {
+  --accent-orange: 255,98,0; /* use as rgb(var(--accent-orange)) */
+}
+
 
 .home {
   font-size: 16px;
@@ -230,9 +235,14 @@
 }
 
 .site-header {
-  background: transparent;
+  /* Use same orange as card border hover */
+  background-color: rgba(var(--accent-orange),0.12);
   position: relative;
   z-index: 1;
+  /* full-bleed header background to viewport edges */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
 }
 
 /* Full-bleed line under the header that spans the viewport edge-to-edge */
@@ -375,7 +385,7 @@
 .project-card:hover {
   transform: translateY(-3px) scale(1);
   box-shadow: var(--shadow);
-  border-color: rgb(255, 98, 0);
+  border-color: rgb(var(--accent-orange));
 }
 
 /* Flip card inner 3d */
@@ -427,6 +437,21 @@
 .flip-btn:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(255,110,0,0.12); }
 .flip-arrow { display:inline-block; transform: rotate(0deg); transition: transform 300ms ease; }
 .project-card.is-flipped .flip-arrow { transform: rotate(180deg); }
+
+/* Make flip arrow visible in light mode (black) and use theme color generally */
+:root.theme-light .flip-arrow,
+:root.theme-light .flip-btn .flip-arrow,
+:root.theme-light .flip-btn svg {
+  color: var(--text-h) !important;
+  fill: var(--text-h) !important;
+}
+
+:root.theme-dark .flip-arrow,
+:root.theme-dark .flip-btn .flip-arrow,
+:root.theme-dark .flip-btn svg {
+  color: var(--text-h) !important;
+  fill: var(--text-h) !important;
+}
 
 /* Back face specific tweaks */
 .back-body { text-align:left; }
@@ -554,6 +579,70 @@
   }
 }
 
+/* Theme override when user explicitly chooses dark mode */
+:root.theme-dark {
+  --text: #d1d5db;
+  --text-h: #ffffff;
+  --bg: #16171d;
+  --border: #2e303a;
+  --code-bg: #1f2028;
+  --accent: #c084fc;
+  --accent-bg: rgba(192,132,252,0.08);
+  --accent-border: rgba(192,132,252,0.5);
+  --social-bg: rgba(47, 48, 58, 0.5);
+  --shadow: rgba(0,0,0,0.4) 0 10px 15px -3px, rgba(0,0,0,0.25) 0 4px 6px -2px;
+}
+
+/* Explicit light theme when user chooses light via toggle */
+:root.theme-light {
+  --text: #000000;
+  --text-h: #000000;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #00e20f;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgb(0, 255, 68);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+}
+
+/* Theme toggle button in header */
+.theme-toggle {
+  margin-left: 10px;
+  height: 36px;
+  min-width: 44px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-h);
+  font-size: 16px;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+}
+.theme-toggle:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+.theme-toggle:focus-visible { outline: 2px solid rgba(106,90,255,0.18); outline-offset: 2px; }
+
+/* Ensure brand image appears white/visible on small devices */
+@media (max-width: 820px) {
+  .brand-img {
+    filter: invert(1) brightness(1.6) contrast(1.1);
+  }
+}
+
+/* Keep large-screen brand image appearance consistent in light theme */
+:root.theme-light .brand-img {
+  /* match original light-mode appearance (no forced inversion) */
+  filter: grayscale(1) brightness(1) contrast(1);
+}
+
+/* Make sure colors remain legible when toggled */
+.site-header, .nav a, .brand > div h1, .brand > div p {
+  color: var(--text-h);
+}
+
 .contact {
   padding: 28px 0;
 }
@@ -637,14 +726,41 @@
   justify-content:center;
   background:transparent;
   border:1px solid var(--border);
-  color:var(--text);
+  color:var(--text-h) !important;
   font-weight:600;
   font-size:14px;
   box-shadow:none;
   cursor:pointer;
 }
 #toggle-skills:hover{background:rgba(0,0,0,0.03)}
-.side-block #toggle-skills.counter{background:transparent;border:1px solid var(--border);color:var(--text);box-shadow:none}
+.side-block #toggle-skills.counter{background:transparent;border:1px solid var(--border);box-shadow:none}
+
+/* Ensure toggle is visible in both themes */
+.side-block #toggle-skills.counter{ color: var(--text-h) !important; }
+
+/* Add subtle background in light mode to make button visible */
+:root.theme-light .side-block #toggle-skills.counter {
+  background: rgba(0,0,0,0.04);
+}
+
+/* Theme-specific image filters for project logos and header logo */
+:root.theme-light .brand-img,
+:root.theme-light .project-img {
+  filter: grayscale(1) brightness(1) contrast(1) !important;
+}
+
+:root.theme-dark .brand-img,
+:root.theme-dark .project-img {
+  filter: invert(1) brightness(1) contrast(1) !important;
+}
+
+/* Mobile: ensure icons/logos are high-contrast */
+@media (max-width: 820px) {
+  .brand-img,
+  .project-img {
+    filter: invert(1) brightness(1.6) contrast(1.1) !important;
+  }
+}
 
 /* About hero: desktop uses two columns, tablet/mobile stack under text */
 .about-hero {
