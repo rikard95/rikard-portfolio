@@ -6,6 +6,7 @@ const GITHUB_OWNER = 'rikard95'
 const MARKDOWN_IMAGE_PATTERN = /!\[[^\]]*]\((<[^>]+>|[^)\s]+)(?:\s+["'][^"']*["'])?\)/
 const HTML_IMAGE_PATTERN = /<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/i
 const BLOCKED_IMAGE_SCHEME_PATTERN = /^(?:javascript|data|vbscript|file):/i
+const GITHUB_BLOB_URL_PATTERN = /^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/i
 
 function extractFirstReadmeImage(readmeText) {
     if (!readmeText) return null
@@ -28,7 +29,15 @@ function resolveReadmeImageUrl(imageUrl, repoName, defaultBranch, readmePath = '
 
     const normalizedUrl = imageUrl.trim()
     if (!normalizedUrl || BLOCKED_IMAGE_SCHEME_PATTERN.test(normalizedUrl)) return null
-    if (/^https?:\/\//i.test(normalizedUrl)) return normalizedUrl
+    if (/^https?:\/\//i.test(normalizedUrl)) {
+        const githubBlobMatch = normalizedUrl.match(GITHUB_BLOB_URL_PATTERN)
+        if (githubBlobMatch) {
+            const [, owner, repo, branch, filePath] = githubBlobMatch
+            const cleanedPath = filePath.split(/[?#]/)[0]
+            return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${cleanedPath}`
+        }
+        return normalizedUrl
+    }
     if (/^\/\//.test(normalizedUrl)) return `https:${normalizedUrl}`
 
     const branch = defaultBranch || 'main'
