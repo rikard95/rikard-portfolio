@@ -8,7 +8,11 @@ export default function ProjectCard({ project }) {
             <div className="card-inner">
                 <div className="card-front">
                     {project.image && (
-                        <img src={project.image} alt={project.title} className="project-img" />
+                        <img
+                            src={project.image}
+                            alt={project.title}
+                            className={`project-img ${project.useLogoFallback ? 'project-img--logo' : 'project-img--preview'}`}
+                        />
                     )}
                     <div className="project-body">
                         <h3>{project.title}</h3>
