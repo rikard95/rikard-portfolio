@@ -106,8 +106,7 @@ export default function Projects() {
                 const parsed = JSON.parse(cached)
                 if (Array.isArray(parsed) && parsed.length) {
                     setProjects(parsed)
-                    // already have data for this session, skip fetching
-                    return () => { mounted = false }
+                    // show cached data immediately while still fetching fresh repos
                 }
             }
         } catch (e) {
