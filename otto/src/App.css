@@ -466,11 +466,13 @@
 .project-img {
   width: 100%;
   height: 140px;
-  object-fit: contain;
+  object-fit: cover;
   background: transparent;
-  filter: grayscale(1) brightness(0) invert(1);
   transition: transform 500ms cubic-bezier(.2,.9,.3,1);
   will-change: transform;
+}
+.project-img--logo {
+  object-fit: contain;
 }
 .project-body {
   padding: 12px 14px;
@@ -745,19 +747,19 @@
 
 /* Theme-specific image filters for project logos and header logo */
 :root.theme-light .brand-img,
-:root.theme-light .project-img {
+:root.theme-light .project-img--logo {
   filter: grayscale(1) brightness(1) contrast(1) !important;
 }
 
 :root.theme-dark .brand-img,
-:root.theme-dark .project-img {
+:root.theme-dark .project-img--logo {
   filter: invert(1) brightness(1) contrast(1) !important;
 }
 
 /* Mobile: ensure icons/logos are high-contrast */
 @media (max-width: 820px) {
   .brand-img,
-  .project-img {
+  .project-img--logo {
     filter: invert(1) brightness(1.6) contrast(1.1) !important;
   }
 }

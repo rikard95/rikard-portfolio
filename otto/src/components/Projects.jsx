@@ -2,6 +2,82 @@ import React, { useState, useEffect, useRef } from 'react'
 import ProjectCard from './ProjectCard'
 import sampleImg from '../assets/RN.png'
 
+const GITHUB_OWNER = 'rikard95'
+const MARKDOWN_IMAGE_PATTERN = /!\[[^\]]*]\((<[^>]+>|[^)\s]+)(?:\s+["'][^"']*["'])?\)/
+const HTML_IMAGE_PATTERN = /<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/i
+const BLOCKED_IMAGE_SCHEME_PATTERN = /^(?:javascript|data|vbscript|file):/i
+const GITHUB_BLOB_URL_PATTERN = /^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)$/i
+
+function getFirstReadmeParagraph(readmeText) {
+    if (!readmeText) return ''
+
+    const strippedReadme = readmeText
+        .replace(/!\[[^\]]*]\((?:<[^>]+>|[^)]+)\)/g, ' ')
+        .replace(/<img\b[^>]*>/gi, ' ')
+
+    const paragraphs = strippedReadme
+        .split(/\n\n+/)
+        .map((paragraph) =>
+            paragraph
+                .replace(/\[([^\]]+)]\((?:<[^>]+>|[^)]+)\)/g, '$1')
+                .replace(/<\/?[^>]+>/g, ' ')
+                .replace(/[#>*`]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim()
+        )
+        .filter(Boolean)
+
+    return paragraphs[0] || ''
+}
+
+function extractFirstReadmeImage(readmeText) {
+    if (!readmeText) return null
+
+    const markdownMatch = MARKDOWN_IMAGE_PATTERN.exec(readmeText)
+    const htmlMatch = HTML_IMAGE_PATTERN.exec(readmeText)
+
+    const firstMatch = [markdownMatch, htmlMatch]
+        .filter(Boolean)
+        .sort((a, b) => a.index - b.index)[0]
+
+    if (!firstMatch) return null
+
+    const src = (firstMatch[1] || '').trim()
+    return src.replace(/^<|>$/g, '')
+}
+
+function resolveReadmeImageUrl(imageUrl, repoName, defaultBranch, readmePath = 'README.md') {
+    if (!imageUrl || !repoName) return null
+
+    const normalizedUrl = imageUrl.trim()
+    if (!normalizedUrl || BLOCKED_IMAGE_SCHEME_PATTERN.test(normalizedUrl)) return null
+    if (/^https?:\/\//i.test(normalizedUrl)) {
+        const githubBlobMatch = normalizedUrl.match(GITHUB_BLOB_URL_PATTERN)
+        if (githubBlobMatch) {
+            const [, owner, repo, branch, filePath] = githubBlobMatch
+            const cleanedPath = filePath.split(/[?#]/)[0]
+            return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${cleanedPath}`
+        }
+        return normalizedUrl
+    }
+    if (/^\/\//.test(normalizedUrl)) return `https:${normalizedUrl}`
+
+    const branch = defaultBranch || 'main'
+    const normalizedReadmePath = readmePath || 'README.md'
+    const readmeBaseUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${repoName}/${branch}/${normalizedReadmePath}`
+
+    if (normalizedUrl.startsWith('/')) {
+        const rootRelativePath = normalizedUrl.replace(/^\/+/, '')
+        return `https://raw.githubusercontent.com/${GITHUB_OWNER}/${repoName}/${branch}/${rootRelativePath}`
+    }
+
+    try {
+        return new URL(normalizedUrl, readmeBaseUrl).toString()
+    } catch {
+        return null
+    }
+}
+
 const FALLBACK_PROJECTS = [
     {
         title: 'Portfolio (Svenska)',
@@ -11,6 +87,7 @@ const FALLBACK_PROJECTS = [
         homepage: 'https://rikardnilsson.vercel.app/',
         github: 'https://github.com/rikard95/portfolio',
         image: sampleImg,
+        useLogoFallback: true,
     },
 ]
 
@@ -89,6 +166,8 @@ export default function Projects() {
                                     : r.homepage || null,
                         link: r.html_url,
                         image: sampleImg,
+                        useLogoFallback: true,
+                        defaultBranch: r.default_branch,
                     }))
 
                 const hasPortfolio = repos.some((p) => p.title && p.title.toLowerCase().includes('portfolio'))
@@ -113,11 +192,22 @@ export default function Projects() {
                                     } else if (typeof Buffer !== 'undefined') {
                                         decoded = Buffer.from(b64, 'base64').toString('utf8')
                                     }
-                                    const firstPara = decoded.split(/\n\n+/)[0].replace(/[#>*`]/g, '').trim()
-                                    const clean = firstPara.replace(/\s+/g, ' ').trim()
+                                    const clean = getFirstReadmeParagraph(decoded)
                                     repo.longDescription = clean.slice(0, 800)
                                     // short front description (trimmed)
                                     repo.description = clean.length > 180 ? clean.slice(0, 177) + '...' : clean
+
+                                    const firstReadmeImage = extractFirstReadmeImage(decoded)
+                                    const resolvedImage = resolveReadmeImageUrl(
+                                        firstReadmeImage,
+                                        repo.title,
+                                        repo.defaultBranch,
+                                        readmeRes.path
+                                    )
+                                    if (resolvedImage) {
+                                        repo.image = resolvedImage
+                                        repo.useLogoFallback = false
+                                    }
                                 } catch (e) {
                                     repo.longDescription = repo.description || ''
                                 }
