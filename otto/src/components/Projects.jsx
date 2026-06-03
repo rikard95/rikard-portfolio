@@ -3,12 +3,15 @@ import ProjectCard from './ProjectCard'
 import sampleImg from '../assets/RN.png'
 
 const GITHUB_OWNER = 'rikard95'
+const MARKDOWN_IMAGE_PATTERN = /!\[[^\]]*]\((<[^>]+>|[^)\s]+)(?:\s+["'][^"']*["'])?\)/
+const HTML_IMAGE_PATTERN = /<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/i
+const BLOCKED_IMAGE_SCHEME_PATTERN = /^(?:javascript|data|vbscript|file):/i
 
 function extractFirstReadmeImage(readmeText) {
     if (!readmeText) return null
 
-    const markdownMatch = /!\[[^\]]*]\((<[^>]+>|[^)\s]+)(?:\s+["'][^"']*["'])?\)/g.exec(readmeText)
-    const htmlMatch = /<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi.exec(readmeText)
+    const markdownMatch = MARKDOWN_IMAGE_PATTERN.exec(readmeText)
+    const htmlMatch = HTML_IMAGE_PATTERN.exec(readmeText)
 
     const firstMatch = [markdownMatch, htmlMatch]
         .filter(Boolean)
@@ -24,13 +27,13 @@ function resolveReadmeImageUrl(imageUrl, repoName, defaultBranch, readmePath = '
     if (!imageUrl || !repoName) return null
 
     const normalizedUrl = imageUrl.trim()
-    if (!normalizedUrl || /^javascript:/i.test(normalizedUrl)) return null
+    if (!normalizedUrl || BLOCKED_IMAGE_SCHEME_PATTERN.test(normalizedUrl)) return null
     if (/^https?:\/\//i.test(normalizedUrl)) return normalizedUrl
     if (/^\/\//.test(normalizedUrl)) return `https:${normalizedUrl}`
 
     const branch = defaultBranch || 'main'
     const normalizedReadmePath = readmePath || 'README.md'
-    const rawReadmeUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${repoName}/${branch}/${normalizedReadmePath}`
+    const readmeBaseUrl = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${repoName}/${branch}/${normalizedReadmePath}`
 
     if (normalizedUrl.startsWith('/')) {
         const rootRelativePath = normalizedUrl.replace(/^\/+/, '')
@@ -38,7 +41,7 @@ function resolveReadmeImageUrl(imageUrl, repoName, defaultBranch, readmePath = '
     }
 
     try {
-        return new URL(normalizedUrl, rawReadmeUrl).toString()
+        return new URL(normalizedUrl, readmeBaseUrl).toString()
     } catch {
         return null
     }
