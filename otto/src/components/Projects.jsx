@@ -286,7 +286,10 @@ export default function Projects() {
 
     const handleRefresh = async () => {
         try {
-            if (typeof sessionStorage !== 'undefined') sessionStorage.removeItem('projects_cache_v1')
+            if (typeof sessionStorage !== 'undefined') {
+                sessionStorage.removeItem('projects_cache_v1')
+                sessionStorage.removeItem('projects_cache_v2')
+            }
         } catch (e) {
             // ignore
         }

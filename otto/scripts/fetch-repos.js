@@ -96,7 +96,7 @@ function resolveReadmeImageUrl(imageUrl, repoOwner, repoName, defaultBranch, rea
 
     // Enrich each repo with readme, languages and resolved image where possible
     const enriched = []
-    for (const r of all) {
+      for (const r of all) {
       const repoOwner = (r.owner && r.owner.login) ? r.owner.login : owner
       const repoName = r.name
       let readmeFull = null
@@ -118,6 +118,8 @@ function resolveReadmeImageUrl(imageUrl, repoOwner, repoName, defaultBranch, rea
           const firstImage = extractFirstReadmeImage(decoded)
           const resolved = resolveReadmeImageUrl(firstImage, repoOwner, repoName, r.default_branch, readmeRes.path)
           if (resolved) resolvedImage = resolved
+        } else {
+          console.log(`No README for ${repoOwner}/${repoName} (status: ${readmeRes && readmeRes.message ? readmeRes.message : 'none'})`)
         }
 
         if (langRes && typeof langRes === 'object') {
@@ -126,6 +128,10 @@ function resolveReadmeImageUrl(imageUrl, repoOwner, repoName, defaultBranch, rea
         }
       } catch (e) {
         // ignore per-repo enrichment errors
+      }
+
+      if (!resolvedImage) {
+        console.log(`No image resolved for ${repoOwner}/${repoName}`)
       }
 
       enriched.push({
