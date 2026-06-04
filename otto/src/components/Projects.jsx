@@ -127,12 +127,12 @@ export default function Projects() {
             // ignore sessionStorage errors and continue to fetch
         }
 
-        const fetchAllRepos = async () => {
+        const fetchAllRepos = async (force = false) => {
             try {
                 // Try serverless proxy first (keeps token secret on server)
                 let all = []
                 try {
-                    const srv = await fetch('/api/github-repos')
+                    const srv = await fetch(`/api/github-repos${force ? '?force=1' : ''}`)
                     if (srv.ok) {
                         const srvData = await srv.json()
                         if (Array.isArray(srvData) && srvData.length) {
@@ -308,7 +308,8 @@ export default function Projects() {
         // expose the fetch function for manual refresh
         fetchRef.current = fetchAllRepos
 
-        fetchAllRepos()
+        // initial load: not forced
+        fetchAllRepos(false)
 
         return () => { mounted = false }
     }, [])
