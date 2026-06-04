@@ -414,6 +414,19 @@
   padding: 12px 14px;
   box-sizing: border-box;
 }
+
+/* Make back content scrollable so long README text is readable */
+.card-back .project-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.card-back .back-content {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  max-height: calc(100% - 56px);
+  padding-right: 8px;
+}
 .project-card.is-flipped .card-inner {
   transform: rotateY(180deg);
 }

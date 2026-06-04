@@ -7,7 +7,17 @@
     "language": "TypeScript",
     "owner": "rikard95",
     "fork": false,
-    "updated_at": "2026-06-04T00:17:20Z"
+    "updated_at": "2026-06-04T00:17:20Z",
+    "default_branch": "main",
+    "readmeFull": "CoachCal is a web-based coaching platform designed to help coaches and trainers manage their clients, bookings, and training schedules in one place. It simplifies the workflow by providing an organized system for tracking sessions, planning programs, and following client progress.",
+    "longDescription": "CoachCal is a web-based coaching platform designed to help coaches and trainers manage their clients, bookings, and training schedules in one place. It simplifies the workflow by providing an organized system for tracking sessions, planning programs, and following client progress.",
+    "image": "https://github.com/user-attachments/assets/2b03f004-eb4c-495f-9f09-7596d493ca4e",
+    "stack": [
+      "TypeScript",
+      "CSS",
+      "JavaScript",
+      "HTML"
+    ]
   },
   {
     "name": "ecommerce-project",
@@ -17,7 +27,17 @@
     "language": "TypeScript",
     "owner": "rikard95",
     "fork": false,
-    "updated_at": "2026-05-30T04:29:56Z"
+    "updated_at": "2026-05-30T04:29:56Z",
+    "default_branch": "main",
+    "readmeFull": null,
+    "longDescription": null,
+    "image": null,
+    "stack": [
+      "TypeScript",
+      "CSS",
+      "JavaScript",
+      "HTML"
+    ]
   },
   {
     "name": "git-test",
@@ -27,7 +47,14 @@
     "language": "HTML",
     "owner": "rikard95",
     "fork": false,
-    "updated_at": "2024-09-05T11:14:20Z"
+    "updated_at": "2024-09-05T11:14:20Z",
+    "default_branch": "main",
+    "readmeFull": null,
+    "longDescription": null,
+    "image": null,
+    "stack": [
+      "HTML"
+    ]
   },
   {
     "name": "https---github.com-Medieinstitutet-fsu24d-social-shopping-plugin-rikard95",
@@ -37,7 +64,14 @@
     "language": "PHP",
     "owner": "rikard95",
     "fork": false,
-    "updated_at": "2025-09-18T13:46:12Z"
+    "updated_at": "2025-09-18T13:46:12Z",
+    "default_branch": "main",
+    "readmeFull": null,
+    "longDescription": null,
+    "image": null,
+    "stack": [
+      "PHP"
+    ]
   },
   {
     "name": "https---github.com-Medieinstitutet-fsu24d-social-shopping-tema-rikard95",
@@ -47,7 +81,15 @@
     "language": "PHP",
     "owner": "rikard95",
     "fork": false,
-    "updated_at": "2025-09-18T13:47:13Z"
+    "updated_at": "2025-09-18T13:47:13Z",
+    "default_branch": "main",
+    "readmeFull": null,
+    "longDescription": null,
+    "image": null,
+    "stack": [
+      "PHP",
+      "CSS"
+    ]
   },
   {
     "name": "kunskapskontroll-1",
@@ -57,7 +99,15 @@
     "language": "HTML",
     "owner": "rikard95",
     "fork": false,
-    "updated_at": "2026-05-31T03:43:31Z"
+    "updated_at": "2026-06-04T00:48:57Z",
+    "default_branch": "main",
+    "readmeFull": "kunskapskontroll-1\nThis website is a school project for Elins konditori (Elin's Bakery/Pastry Shop), established in 1995 and located in Tvåby.\n\nIt presents a traditional bakery that bakes everything from scratch using high-quality, natural ingredients and time-honored recipes. Their selection includes classic buns, cookies, and exclusive pastries. They also offer specialized catering services for weddings, birthdays, and corporate events.\n\nThe site features standard pages like Home, Assortment, Our Services, Contact, and About Us, along with their regular opening hours for weekdays and weekends.",
+    "longDescription": "kunskapskontroll-1 This website is a school project for Elins konditori (Elin's Bakery/Pastry Shop), established in 1995 and located in Tvåby.",
+    "image": "https://github.com/user-attachments/assets/c801e1cb-f430-41b5-a587-267dce64ebc9",
+    "stack": [
+      "HTML",
+      "CSS"
+    ]
   },
   {
     "name": "rikard-portfolio",
@@ -67,7 +117,16 @@
     "language": "JavaScript",
     "owner": "rikard95",
     "fork": false,
-    "updated_at": "2026-06-03T23:28:09Z"
+    "updated_at": "2026-06-04T00:39:49Z",
+    "default_branch": "main",
+    "readmeFull": null,
+    "longDescription": null,
+    "image": null,
+    "stack": [
+      "JavaScript",
+      "CSS",
+      "HTML"
+    ]
   },
   {
     "name": "stor-och-liten",
@@ -77,7 +136,17 @@
     "language": "TypeScript",
     "owner": "rikard95",
     "fork": false,
-    "updated_at": "2025-12-04T21:12:02Z"
+    "updated_at": "2025-12-04T21:12:02Z",
+    "default_branch": "main",
+    "readmeFull": null,
+    "longDescription": null,
+    "image": null,
+    "stack": [
+      "TypeScript",
+      "CSS",
+      "JavaScript",
+      "HTML"
+    ]
   },
   {
     "name": "swedish-portfolio",
@@ -87,6 +156,16 @@
     "language": "HTML",
     "owner": "rikard95",
     "fork": false,
-    "updated_at": "2026-06-03T22:35:14Z"
+    "updated_at": "2026-06-03T22:35:14Z",
+    "default_branch": "main",
+    "readmeFull": "Text\nSwedish portfolio\n \n\nThis project was generated using Angular CLI version 20.3.3.\n\n Development server\n\nTo start a local development server, run:\n\nbash\nng serve\n\nOnce the server is running, open your browser and navigate to http://localhost:4200/. The application will automatically reload whenever you modify any of the source files.\n\n Code scaffolding\n\nAngular CLI includes powerful code scaffolding tools. To generate a new component, run:\n\nbash\nng generate component component-name\n\nFor a complete list of available schematics (such as components, directives, or pipes), run:\n\nbash\nng generate --help\n\n Building\n\nTo build the project run:\n\nbash\nng build\n\nThis will compile your project and store the build artifacts in the dist/ directory. By default, the production build optimizes your application for performance and speed.\n\n Running unit tests\n\nTo execute unit tests with the Karma test runner, use the following command:\n\nbash\nng test\n\n Running end-to-end tests\n\nFor end-to-end (e2e) testing, run:\n\nbash\nng e2e\n\nAngular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.\n\n Deployment\n\nThis project is automatically deployed to Vercel when changes are pushed to the main branch.\n\nLive URL: https://portfolio-rho-one-80.vercel.app/\n\n Deployment Configuration\n\n- The project uses Vercel's native GitHub integration for automatic deployments\n- Build configuration is defined in vercel.json\n- GitHub Actions workflow (.github/workflows/ci.yml) runs CI checks (build + test)\n- Production deployments are automatically triggered by Vercel on push to main branch\n- Preview deployments are automatically created for pull requests\n- No tokens or GitHub secrets required - deployments handled by Vercel's GitHub integration\n\n Manual Deployment\n\nIf you need to deploy manually, you can use the Vercel CLI:\n\nbash\nnpm install -g vercel\nvercel --prod\n\nFor detailed deployment setup instructions, see SETUP.md.\n\n Additional Resources\n\nFor more information on using the Angular CLI, including detailed command references, visit the Angular CLI Overview and Command Reference page.",
+    "longDescription": "Text Swedish portfolio",
+    "image": "https://github.com/user-attachments/assets/dc23fafd-d518-499b-9bd4-2354dea9ee05",
+    "stack": [
+      "HTML",
+      "TypeScript",
+      "CSS",
+      "JavaScript"
+    ]
   }
 ]
