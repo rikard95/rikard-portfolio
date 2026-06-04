@@ -1,18 +1,50 @@
 import { useState } from 'react'
+import sampleImg from '../assets/RN.png'
 
 export default function ProjectCard({ project }) {
     const [flipped, setFlipped] = useState(false)
 
     const stackText = (project.stack && (Array.isArray(project.stack) ? project.stack.join(' • ') : project.stack)) || project.tech || ''
 
+    // Build image candidates: original, a possible /assets/<filename> fallback, then the white logo
+    const buildCandidates = () => {
+        const c = []
+        if (project.image) {
+            c.push(project.image)
+            try {
+                const parts = project.image.split('/')
+                const file = parts[parts.length - 1]
+                if (file) c.push(`/assets/${file}`)
+            } catch (e) {
+                // ignore
+            }
+        }
+        // fallback to provided logo
+        c.push(sampleImg)
+        return c
+    }
+
+    const candidates = buildCandidates()
+    const [imgIndex, setImgIndex] = useState(0)
+    const [imgSrc, setImgSrc] = useState(candidates[0])
+
+    const handleImgError = () => {
+        const next = imgIndex + 1
+        if (next < candidates.length) {
+            setImgIndex(next)
+            setImgSrc(candidates[next])
+        }
+    }
+
     return (
         <article className={`project-card ${flipped ? 'is-flipped' : ''}`}>
             <div className="card-inner">
                 <div className="card-front">
-                    {project.image && (
+                    {imgSrc && (
                         <img
-                            src={project.image}
+                            src={imgSrc}
                             alt={project.title}
+                            onError={handleImgError}
                             className={`project-img ${project.useLogoFallback ? 'project-img--logo' : 'project-img--preview'}`}
                         />
                     )}
