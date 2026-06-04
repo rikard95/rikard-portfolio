@@ -129,29 +129,31 @@ export default function Projects() {
 
         const fetchAllRepos = async (force = false) => {
             try {
-                // Try serverless proxy first (keeps token secret on server)
+                // Prefer local generated `public/repos.json` on deployed builds for stability
+                // (local assets and cleaned readmes). Only call serverless API when `force` is true
+                // or when no local file exists.
                 let all = []
-                try {
-                    const srv = await fetch(`/api/github-repos${force ? '?force=1' : ''}`)
-                    if (srv.ok) {
-                        const srvData = await srv.json()
-                        if (Array.isArray(srvData) && srvData.length) {
-                            all = srvData
-                        }
-                    }
-                } catch (e) {
-                    // continue to unauthenticated fallback
-                }
-
-                // If serverless proxy didn't return data, try local generated `public/repos.json`.
-                // Do NOT call the public GitHub API directly from the client — it easily hits rate limits (429).
-                if (all.length === 0) {
+                if (!force) {
                     try {
                         const localRes = await fetch('/repos.json')
                         if (localRes && localRes.ok) {
                             const localData = await localRes.json()
                             if (Array.isArray(localData) && localData.length) {
                                 all = localData
+                            }
+                        }
+                    } catch (e) {
+                        // ignore
+                    }
+                }
+
+                if (all.length === 0) {
+                    try {
+                        const srv = await fetch(`/api/github-repos${force ? '?force=1' : ''}`)
+                        if (srv.ok) {
+                            const srvData = await srv.json()
+                            if (Array.isArray(srvData) && srvData.length) {
+                                all = srvData
                             }
                         }
                     } catch (e) {
