@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/fetch-repos.js",
     "build": "vite build",
     "fetch:repos": "node scripts/fetch-repos.js",
     "lint": "eslint .",

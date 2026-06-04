@@ -117,7 +117,40 @@ function resolveReadmeImageUrl(imageUrl, repoOwner, repoName, defaultBranch, rea
           readmeFull = cleanReadmeText(decoded)
           const firstImage = extractFirstReadmeImage(decoded)
           const resolved = resolveReadmeImageUrl(firstImage, repoOwner, repoName, r.default_branch, readmeRes.path)
-          if (resolved) resolvedImage = resolved
+                if (resolved) {
+                  // try to download the image into public/assets for stable hosting
+                  try {
+                    const imgRes = await fetch(resolved)
+                    if (imgRes && imgRes.ok) {
+                      const contentType = imgRes.headers.get('content-type') || ''
+                      let ext = ''
+                      if (/image\/(png|jpeg|jpg|gif|webp|svg)/i.test(contentType)) {
+                        const m = contentType.match(/image\/(png|jpeg|jpg|gif|webp|svg)/i)
+                        ext = m ? m[1].toLowerCase() : ''
+                        if (ext === 'jpeg') ext = 'jpg'
+                      }
+                      // fallback extension from URL
+                      if (!ext) {
+                        const u = new URL(resolved)
+                        const tail = u.pathname.split('/').pop() || ''
+                        const m2 = tail.match(/\.([a-z0-9]{2,6})$/i)
+                        if (m2) ext = m2[1]
+                      }
+                      if (!ext) ext = 'png'
+                      const fileName = `repo-${repoOwner}-${repoName}.${ext}`.replace(/[^a-zA-Z0-9._-]/g, '-')
+                      const outDir = path.resolve('public', 'assets')
+                      await fs.mkdir(outDir, { recursive: true })
+                      const outPath = path.join(outDir, fileName)
+                      const buffer = Buffer.from(await imgRes.arrayBuffer())
+                      await fs.writeFile(outPath, buffer)
+                      resolvedImage = `/assets/${fileName}`
+                    } else {
+                      resolvedImage = resolved
+                    }
+                  } catch (e) {
+                    resolvedImage = resolved
+                  }
+                }
         } else {
           console.log(`No README for ${repoOwner}/${repoName} (status: ${readmeRes && readmeRes.message ? readmeRes.message : 'none'})`)
         }
