@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
   try {
     while (true) {
-      const url = `https://api.github.com/users/${owner}/repos?per_page=${perPage}&page=${page}`
+      const url = `https://api.github.com/users/${owner}/repos?per_page=${perPage}&page=${page}&type=public`
       const r = await fetch(url, { headers })
       if (!r.ok) {
         const txt = await r.text().catch(() => '')

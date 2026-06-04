@@ -133,7 +133,7 @@ export default function Projects() {
                     const perPage = 100
                     let page = 1
                     while (true) {
-                        const res = await fetch(`https://api.github.com/users/rikard95/repos?per_page=${perPage}&page=${page}`)
+                        const res = await fetch(`https://api.github.com/users/rikard95/repos?per_page=${perPage}&page=${page}&type=public`)
                         let data = null
                         try { data = await res.json() } catch (err) { data = null }
                         if (!res.ok) {
@@ -149,7 +149,7 @@ export default function Projects() {
                 if (!mounted) return
 
                 const repos = all
-                    .filter((r) => !r.fork && r.name && r.name.toLowerCase() !== 'git-test')
+                    .filter((r) => r.name && r.name.toLowerCase() !== 'git-test')
                     .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
                     .map((r) => ({
                         title: r.name,

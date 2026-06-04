@@ -17,7 +17,7 @@ let all = []
 const headers = { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
 
 async function fetchPage(p) {
-  const url = `https://api.github.com/users/${owner}/repos?per_page=${perPage}&page=${p}`
+  const url = `https://api.github.com/users/${owner}/repos?per_page=${perPage}&page=${p}&type=public`
   const res = await fetch(url, { headers })
   if (!res.ok) {
     const txt = await res.text().catch(() => '')

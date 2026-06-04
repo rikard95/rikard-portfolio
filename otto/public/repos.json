@@ -7,7 +7,7 @@
     "language": "TypeScript",
     "owner": "rikard95",
     "fork": false,
-    "updated_at": "2026-01-09T10:43:44Z"
+    "updated_at": "2026-06-04T00:17:20Z"
   },
   {
     "name": "ecommerce-project",
@@ -53,11 +53,21 @@
     "name": "kunskapskontroll-1",
     "description": "konditori",
     "html_url": "https://github.com/rikard95/kunskapskontroll-1",
-    "homepage": null,
+    "homepage": "https://kunskapskontroll-1.vercel.app",
     "language": "HTML",
     "owner": "rikard95",
     "fork": false,
-    "updated_at": "2026-05-30T22:37:43Z"
+    "updated_at": "2026-05-31T03:43:31Z"
+  },
+  {
+    "name": "rikard-portfolio",
+    "description": null,
+    "html_url": "https://github.com/rikard95/rikard-portfolio",
+    "homepage": null,
+    "language": "JavaScript",
+    "owner": "rikard95",
+    "fork": false,
+    "updated_at": "2026-06-03T23:28:09Z"
   },
   {
     "name": "stor-och-liten",
@@ -73,10 +83,10 @@
     "name": "swedish-portfolio",
     "description": null,
     "html_url": "https://github.com/rikard95/swedish-portfolio",
-    "homepage": "https://rikardnilsson.vercel.app",
+    "homepage": "https://rikardnilsson.vercel.app/",
     "language": "HTML",
     "owner": "rikard95",
     "fork": false,
-    "updated_at": "2026-05-30T22:40:45Z"
+    "updated_at": "2026-06-03T22:35:14Z"
   }
 ]
