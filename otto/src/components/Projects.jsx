@@ -96,7 +96,7 @@ const FALLBACK_PROJECTS = [
 ]
 
 export default function Projects() {
-    const [projects, setProjects] = useState(FALLBACK_PROJECTS)
+    const [projects, setProjects] = useState([])
 
     const fetchRef = useRef(null)
 
@@ -192,10 +192,7 @@ export default function Projects() {
                         stack: r.stack || null,
                     }))
 
-                const hasPortfolio = repos.some((p) => p.title && p.title.toLowerCase().includes('portfolio'))
-                if (!hasPortfolio) {
-                    repos.unshift(FALLBACK_PROJECTS[0])
-                }
+                // Do not inject any static fallback projects; only use public GitHub repos
 
                 if (repos.length) {
                     const enrich = async (repo) => {
@@ -293,7 +290,7 @@ export default function Projects() {
         } catch (e) {
             // ignore
         }
-        setProjects(FALLBACK_PROJECTS)
+        setProjects([])
         if (fetchRef.current) await fetchRef.current()
     }
 
