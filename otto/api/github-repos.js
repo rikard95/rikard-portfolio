@@ -120,20 +120,50 @@ export default async function handler(req, res) {
       return null
     }
 
-    const enriched = await Promise.all(all.map(async (r) => {
+    // Helper: sleep
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+    // Helper: fetch with retry/backoff on 429
+    async function retryFetch(url, options = {}, attempts = 5) {
+      let backoff = 500
+      for (let i = 0; i < attempts; i++) {
+        try {
+          const r = await fetch(url, options)
+          if (r.status === 429) {
+            const ra = r.headers.get('retry-after')
+            const wait = ra ? parseInt(ra, 10) * 1000 : backoff
+            await sleep(wait)
+            backoff *= 2
+            continue
+          }
+          return r
+        } catch (e) {
+          await sleep(backoff)
+          backoff *= 2
+        }
+      }
+      return null
+    }
+
+    const enriched = []
+    for (const r of all) {
       const repoOwner = r.owner && r.owner.login ? r.owner.login : owner
       const repoName = r.name
       let readmeFull = null
       let longDescription = r.description || null
       let image = null
       let stack = null
+      let framework = null
 
       try {
-        const [readmeRes, langRes, pkgRes] = await Promise.all([
-          fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/readme`, { headers }).then(x => x.ok ? x.json() : null).catch(() => null),
-          fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/languages`, { headers }).then(x => x.ok ? x.json() : null).catch(() => null),
-          fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/package.json`, { headers }).then(x => x.ok ? x.json() : null).catch(() => null),
-        ])
+        // fetch sequentially to avoid burst rate-limiting
+        const readmeResp = await retryFetch(`https://api.github.com/repos/${repoOwner}/${repoName}/readme`, { headers })
+        const langResp = await retryFetch(`https://api.github.com/repos/${repoOwner}/${repoName}/languages`, { headers })
+        const pkgResp = await retryFetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/package.json`, { headers })
+
+        const readmeRes = readmeResp && readmeResp.ok ? await readmeResp.json() : null
+        const langRes = langResp && langResp.ok ? await langResp.json() : null
+        const pkgRes = pkgResp && pkgResp.ok ? await pkgResp.json() : null
 
         let pkgObj = null
         if (pkgRes && pkgRes.content) {
@@ -149,7 +179,7 @@ export default async function handler(req, res) {
           const decoded = Buffer.from(b64, 'base64').toString('utf8')
           const firstPara = getFirstReadmeParagraph(decoded)
           longDescription = firstPara.slice(0, 800)
-            readmeFull = cleanReadmeText(decoded)
+          readmeFull = cleanReadmeText(decoded)
           const firstImage = extractFirstReadmeImage(decoded)
           const resolved = resolveReadmeImageUrl(firstImage, repoOwner, repoName, r.default_branch, readmeRes.path)
           if (resolved) image = resolved
@@ -159,14 +189,15 @@ export default async function handler(req, res) {
           stack = Object.keys(langRes).slice(0, 6)
         }
 
-        // Detect framework from package.json or README
-        let framework = detectFrameworkFromPackage(pkgObj) || detectFrameworkFromReadme(readmeRes && readmeRes.content ? (Buffer.from(readmeRes.content.replace(/\n/g, ''), 'base64').toString('utf8')) : null)
-
-        return Object.assign({}, r, { readmeFull, longDescription, image, stack, framework })
+        framework = detectFrameworkFromPackage(pkgObj) || detectFrameworkFromReadme(readmeRes && readmeRes.content ? (Buffer.from(readmeRes.content.replace(/\n/g, ''), 'base64').toString('utf8')) : null)
       } catch (e) {
-        return Object.assign({}, r, { readmeFull, longDescription, image, stack })
+        // ignore per-repo errors
       }
-    }))
+
+      enriched.push(Object.assign({}, r, { readmeFull, longDescription, image, stack, framework }))
+      // small delay between repos to avoid hitting secondary rate limits
+      await sleep(200)
+    }
 
     return res.status(200).json(enriched)
   } catch (e) {

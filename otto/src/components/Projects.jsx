@@ -143,20 +143,19 @@ export default function Projects() {
                     // continue to unauthenticated fallback
                 }
 
+                // If serverless proxy didn't return data, try local generated `public/repos.json`.
+                // Do NOT call the public GitHub API directly from the client — it easily hits rate limits (429).
                 if (all.length === 0) {
-                    const perPage = 100
-                    let page = 1
-                    while (true) {
-                        const res = await fetch(`https://api.github.com/users/${GITHUB_OWNER}/repos?per_page=${perPage}&page=${page}&type=public`)
-                        let data = null
-                        try { data = await res.json() } catch (err) { data = null }
-                        if (!res.ok) {
-                            break
+                    try {
+                        const localRes = await fetch('/repos.json')
+                        if (localRes && localRes.ok) {
+                            const localData = await localRes.json()
+                            if (Array.isArray(localData) && localData.length) {
+                                all = localData
+                            }
                         }
-                        if (!Array.isArray(data) || data.length === 0) break
-                        all.push(...data)
-                        if (data.length < perPage) break
-                        page += 1
+                    } catch (e) {
+                        // ignore
                     }
                 }
 
