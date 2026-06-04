@@ -324,7 +324,7 @@ export default function Projects() {
             // ignore
         }
         setProjects([])
-        if (fetchRef.current) await fetchRef.current()
+        if (fetchRef.current) await fetchRef.current(true)
     }
 
     return (
