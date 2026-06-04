@@ -6,25 +6,61 @@ export default function ProjectCard({ project }) {
 
     const stackText = (project.stack && (Array.isArray(project.stack) ? project.stack.join(' • ') : project.stack)) || project.tech || ''
 
-    // Build image candidates: original, a possible /assets/<filename> fallback, then the white logo
-    const buildCandidates = () => {
-        const c = []
-        if (project.image) {
-            c.push(project.image)
-            try {
-                const parts = project.image.split('/')
-                const file = parts[parts.length - 1]
-                if (file) c.push(`/assets/${file}`)
-            } catch (e) {
-                // ignore
+    // Normalize README image URLs to prefer GitHub raw URLs when possible,
+    // but keep absolute URLs as-is. Only try `/assets/<file>` when the
+    // provided image looks like a local asset.
+    const normalizeImage = (img) => {
+        if (!img) return null
+        try {
+            const trimmed = img.trim()
+            // If it's already a raw.githubusercontent URL, return it
+            if (/^https?:\/\/raw\.githubusercontent\.com\//i.test(trimmed)) return trimmed
+            // If it's a github blob URL, convert to raw
+            const blobMatch = trimmed.match(/https?:\/\/github\.com\/(.+?)\/(.+?)\/blob\/(.+?)\/(.+)/i)
+            if (blobMatch) {
+                const [, owner, repo, branch, filePath] = blobMatch
+                return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath}`
             }
-        }
-        // fallback to provided logo
-        c.push(sampleImg)
-        return c
+            // If it's an absolute URL (http/https), return as-is
+            if (/^https?:\/\//i.test(trimmed)) return trimmed
+            // If it's a protocol-relative URL, make it https
+            if (/^\/\//.test(trimmed)) return `https:${trimmed}`
+            // If it's a root-relative path like /assets/... or /owner/repo/blob/...
+            if (trimmed.startsWith('/')) {
+                // If it looks like a repo blob path (/owner/repo/blob/...), convert to raw
+                const parts = trimmed.split('/')
+                if (parts.length > 4 && parts[3] === 'blob') {
+                    const owner = parts[1]
+                    const repo = parts[2]
+                    const branch = parts[4]
+                    const filePath = parts.slice(5).join('/')
+                    return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath}`
+                }
+                // Otherwise assume it's a local asset and return as-is
+                return trimmed
+            }
+            // Otherwise treat as relative path inside repo: construct raw URL using project owner/title/defaultBranch
+            const owner = project.owner || ''
+            const repoName = project.title || ''
+            const branch = project.defaultBranch || 'main'
+            if (owner && repoName) {
+                return `https://raw.githubusercontent.com/${owner}/${repoName}/${branch}/${trimmed}`
+            }
+            return trimmed
+        } catch (e) { return img }
     }
 
-    const candidates = buildCandidates()
+    const candidates = (() => {
+        const c = []
+        if (project.image) {
+            const normalized = normalizeImage(project.image)
+            if (normalized) c.push(normalized)
+            // if the original image is a local /assets path, keep it as a candidate
+            if (project.image.startsWith('/assets/') && project.image !== normalized) c.push(project.image)
+        }
+        c.push(sampleImg)
+        return c
+    })()
     const [imgIndex, setImgIndex] = useState(0)
     const [imgSrc, setImgSrc] = useState(candidates[0])
 
