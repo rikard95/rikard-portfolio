@@ -57,6 +57,15 @@ export default async function handler(req, res) {
     }
 
     function resolveReadmeImageUrl(imageUrl, owner, repo, defaultBranch, readmePath = 'README.md') {
+          function cleanReadmeText(readmeText) {
+            if (!readmeText) return ''
+            const withoutImages = readmeText.replace(/!\[[^\]]*]\((?:<[^>]+>|[^)]+)\)/g, ' ')
+            const withoutHtmlImgs = withoutImages.replace(/<img\b[^>]*>/gi, ' ')
+            const withoutTags = withoutHtmlImgs.replace(/<[^>]+>/g, ' ')
+            const withoutLinks = withoutTags.replace(/\[([^\]]+)]\((?:<[^>]+>|[^)]+)\)/g, '$1')
+            const withoutMd = withoutLinks.replace(/[#>*`]/g, ' ')
+            return withoutMd.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim()
+          }
       if (!imageUrl) return null
       const normalized = imageUrl.trim()
       if (!normalized) return null
@@ -78,6 +87,39 @@ export default async function handler(req, res) {
       try { return new URL(normalized, `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${readmePath}`).toString() } catch { return null }
     }
 
+    function detectFrameworkFromPackage(pkgObj) {
+      if (!pkgObj || typeof pkgObj !== 'object') return null
+      const deps = Object.assign({}, pkgObj.dependencies || {}, pkgObj.devDependencies || {}, pkgObj.peerDependencies || {})
+      const keys = Object.keys(deps).map(k => k.toLowerCase())
+      if (keys.includes('next')) return 'Next.js'
+      if (keys.includes('gatsby')) return 'Gatsby'
+      if (keys.includes('nuxt') || keys.includes('@nuxtjs')) return 'Nuxt'
+      if (keys.includes('@angular/core') || keys.includes('angular')) return 'Angular'
+      if (keys.includes('react') || keys.includes('react-dom')) return 'React'
+      if (keys.includes('vue') || keys.includes('@vue')) return 'Vue'
+      if (keys.includes('svelte')) return 'Svelte'
+      if (keys.includes('preact')) return 'Preact'
+      if (keys.includes('ember')) return 'Ember'
+      if (keys.includes('lit') || keys.includes('lit-element') || keys.includes('lit-html')) return 'Lit'
+      return null
+    }
+
+    function detectFrameworkFromReadme(readmeText) {
+      if (!readmeText) return null
+      const t = readmeText.toLowerCase()
+      if (t.includes('next.js') || t.includes('nextjs')) return 'Next.js'
+      if (t.includes('gatsby')) return 'Gatsby'
+      if (t.includes('nuxt')) return 'Nuxt'
+      if (t.includes('@angular') || t.includes('angular')) return 'Angular'
+      if (t.includes('react')) return 'React'
+      if (t.includes('vue')) return 'Vue'
+      if (t.includes('svelte')) return 'Svelte'
+      if (t.includes('preact')) return 'Preact'
+      if (t.includes('ember')) return 'Ember'
+      if (t.includes('lit ')) return 'Lit'
+      return null
+    }
+
     const enriched = await Promise.all(all.map(async (r) => {
       const repoOwner = r.owner && r.owner.login ? r.owner.login : owner
       const repoName = r.name
@@ -87,17 +129,27 @@ export default async function handler(req, res) {
       let stack = null
 
       try {
-        const [readmeRes, langRes] = await Promise.all([
+        const [readmeRes, langRes, pkgRes] = await Promise.all([
           fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/readme`, { headers }).then(x => x.ok ? x.json() : null).catch(() => null),
           fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/languages`, { headers }).then(x => x.ok ? x.json() : null).catch(() => null),
+          fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/package.json`, { headers }).then(x => x.ok ? x.json() : null).catch(() => null),
         ])
+
+        let pkgObj = null
+        if (pkgRes && pkgRes.content) {
+          try {
+            const pkgB64 = pkgRes.content.replace(/\n/g, '')
+            const pkgText = Buffer.from(pkgB64, 'base64').toString('utf8')
+            pkgObj = JSON.parse(pkgText)
+          } catch { pkgObj = null }
+        }
 
         if (readmeRes && readmeRes.content) {
           const b64 = readmeRes.content.replace(/\n/g, '')
           const decoded = Buffer.from(b64, 'base64').toString('utf8')
           const firstPara = getFirstReadmeParagraph(decoded)
           longDescription = firstPara.slice(0, 800)
-          readmeFull = decoded
+            readmeFull = cleanReadmeText(decoded)
           const firstImage = extractFirstReadmeImage(decoded)
           const resolved = resolveReadmeImageUrl(firstImage, repoOwner, repoName, r.default_branch, readmeRes.path)
           if (resolved) image = resolved
@@ -106,11 +158,14 @@ export default async function handler(req, res) {
         if (langRes && typeof langRes === 'object') {
           stack = Object.keys(langRes).slice(0, 6)
         }
-      } catch (e) {
-        // ignore per-repo enrichment errors
-      }
 
-      return Object.assign({}, r, { readmeFull, longDescription, image, stack })
+        // Detect framework from package.json or README
+        let framework = detectFrameworkFromPackage(pkgObj) || detectFrameworkFromReadme(readmeRes && readmeRes.content ? (Buffer.from(readmeRes.content.replace(/\n/g, ''), 'base64').toString('utf8')) : null)
+
+        return Object.assign({}, r, { readmeFull, longDescription, image, stack, framework })
+      } catch (e) {
+        return Object.assign({}, r, { readmeFull, longDescription, image, stack })
+      }
     }))
 
     return res.status(200).json(enriched)

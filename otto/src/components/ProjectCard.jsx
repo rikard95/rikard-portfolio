@@ -3,7 +3,7 @@ import { useState } from 'react'
 export default function ProjectCard({ project }) {
     const [flipped, setFlipped] = useState(false)
 
-    const stackText = project.tech || (project.stack && project.stack.join(' • ')) || ''
+    const stackText = (project.stack && (Array.isArray(project.stack) ? project.stack.join(' • ') : project.stack)) || project.tech || ''
 
     return (
         <article className={`project-card ${flipped ? 'is-flipped' : ''}`}>
@@ -21,7 +21,10 @@ export default function ProjectCard({ project }) {
                         <h3>{project.title}</h3>
 
                         <div className="project-meta">
-                            <small>{stackText}</small>
+                            <small className="project-stack">{stackText}</small>
+                            {project.framework && (
+                                <small className="project-framework">{project.framework}</small>
+                            )}
 
                             <div className="project-actions">
                                 {project.github && (

@@ -30,6 +30,16 @@ function getFirstReadmeParagraph(readmeText) {
     return paragraphs[0] || ''
 }
 
+function cleanReadmeText(readmeText) {
+    if (!readmeText) return ''
+    const withoutImages = readmeText.replace(/!\[[^\]]*]\((?:<[^>]+>|[^)]+)\)/g, ' ')
+    const withoutHtmlImgs = withoutImages.replace(/<img\b[^>]*>/gi, ' ')
+    const withoutTags = withoutHtmlImgs.replace(/<[^>]+>/g, ' ')
+    const withoutLinks = withoutTags.replace(/\[([^\]]+)]\((?:<[^>]+>|[^)]+)\)/g, '$1')
+    const withoutMd = withoutLinks.replace(/[#>*`]/g, ' ')
+    return withoutMd.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim()
+}
+
 function extractFirstReadmeImage(readmeText) {
     if (!readmeText) return null
 
@@ -190,6 +200,7 @@ export default function Projects() {
                         readmeFull: r.readmeFull || null,
                         longDescription: r.longDescription || null,
                         stack: r.stack || null,
+                        framework: r.framework || null,
                     }))
 
                 // Do not inject any static fallback projects; only use public GitHub repos
@@ -197,8 +208,8 @@ export default function Projects() {
                 if (repos.length) {
                     const enrich = async (repo) => {
                         try {
-                            // If we already have readmeFull and stack (from local repos.json), skip remote reads
-                            if (repo.readmeFull && repo.stack) return repo
+                            // If we already have readmeFull, stack and framework (from local repos.json), skip remote reads
+                            if (repo.readmeFull && repo.stack && repo.framework) return repo
 
                             const ownerToUse = repo.owner || GITHUB_OWNER
                             // fetch only what we don't already have
@@ -209,6 +220,11 @@ export default function Projects() {
                             }
                             if (!repo.stack) {
                                 langRes = await fetch(`https://api.github.com/repos/${ownerToUse}/${repo.title}/languages`).then(r => r.ok ? r.json() : null).catch(() => null)
+                            }
+                            // try to detect framework from package.json when possible
+                            let pkgRes = null
+                            if (!repo.framework) {
+                                pkgRes = await fetch(`https://api.github.com/repos/${ownerToUse}/${repo.title}/contents/package.json`).then(r => r.ok ? r.json() : null).catch(() => null)
                             }
 
                             if (readmeRes && readmeRes.content) {
@@ -248,6 +264,22 @@ export default function Projects() {
                                 const langs = Object.keys(langRes)
                                 repo.stack = repo.stack || langs.slice(0, 6)
                                 repo.tech = repo.tech || (repo.stack ? repo.stack.join(' • ') : '')
+                            }
+
+                            if (pkgRes && pkgRes.content) {
+                                try {
+                                    const pkgB64 = pkgRes.content.replace(/\n/g, '')
+                                    const pkgText = (typeof atob === 'function') ? atob(pkgB64) : Buffer.from(pkgB64, 'base64').toString('utf8')
+                                    const pkgObj = JSON.parse(pkgText)
+                                    const deps = Object.assign({}, pkgObj.dependencies || {}, pkgObj.devDependencies || {}, pkgObj.peerDependencies || {})
+                                    const keys = Object.keys(deps).map(k => k.toLowerCase())
+                                    if (keys.includes('next')) repo.framework = 'Next.js'
+                                    else if (keys.includes('gatsby')) repo.framework = 'Gatsby'
+                                    else if (keys.includes('@angular/core') || keys.includes('angular')) repo.framework = 'Angular'
+                                    else if (keys.includes('react') || keys.includes('react-dom')) repo.framework = 'React'
+                                    else if (keys.includes('vue') || keys.includes('@vue')) repo.framework = 'Vue'
+                                    else if (keys.includes('svelte')) repo.framework = 'Svelte'
+                                } catch (e) { /* ignore */ }
                             }
                         } catch (e) {
                             // ignore enrichment errors
