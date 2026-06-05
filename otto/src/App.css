@@ -237,8 +237,8 @@
 .site-header {
   /* Use same orange as card border hover */
   background-color: rgba(var(--accent-orange),0.12);
-  position: relative;
-  z-index: 1;
+  position: relative !important;
+  z-index: 10 !important;
   /* full-bleed header background to viewport edges */
   width: 100vw;
   margin-left: calc(50% - 50vw);
@@ -298,14 +298,65 @@
   border-radius: 8px;
 }
 
-/* Match nav link hover colors to the send/back button hovers */
+
+.logo-link:hover .brand-img {
+  cursor: pointer;
+  transition: transform 0.6s ease-in-out, filter 0.3s ease;
+}
+
+
+@keyframes nav-hop {
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  20% { 
+    transform: translateY(-4px); 
+  }
+  40% { 
+    transform: translateY(0); 
+  }
+  60% { 
+    transform: translateY(-2px);
+  }
+  80% { 
+    transform: translateY(0); 
+  }
+}
+
+
+.nav a {
+  display: inline-block;
+  transition: color 0.3s ease;
+}
+
+
+.nav a[href="/.html"]:hover,
+.nav a[href="/"]:hover {
+  color: rgb(210, 165, 0);
+  animation: nav-hop 0.6s ease-out forwards;
+}
+
 .nav a[href="/contact.html"]:hover,
 .nav a[href="/contact"]:hover {
-  color: rgb(52,141,0);
+  color: rgb(52, 141, 0);
+  animation: nav-hop 0.6s ease-out forwards;
 }
+
 .nav a[href="/about.html"]:hover,
 .nav a[href="/about"]:hover {
-  color: rgb(0,183,255);
+  color: rgb(0, 183, 255);
+  animation: nav-hop 0.6s ease-out forwards;
+}
+
+.footer-link {
+  display: inline-block !important;
+  transition: color 0.3s ease, text-shadow 0.3s ease !important;
+}
+
+
+.footer-link:hover {
+  animation: nav-hop 0.6s ease-out forwards !important;
+  color: rgb(52, 141, 0); 
 }
 
 .nav {

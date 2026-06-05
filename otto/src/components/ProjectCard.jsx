@@ -47,7 +47,7 @@ export default function ProjectCard({ project }) {
                 return `https://raw.githubusercontent.com/${owner}/${repoName}/${branch}/${trimmed}`
             }
             return trimmed
-        } catch (e) { return img }
+        } catch { return img }
     }
 
     const candidates = (() => {

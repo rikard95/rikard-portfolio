@@ -7,7 +7,7 @@ import { Routes, Route, Link, useLocation } from 'react-router-dom'
 
 function App() {
   const location = useLocation()
-  const hideSite = ['/about', '/contact', '/about.html', '/contact.html'].includes(location.pathname)
+  const hideSite = ['', '', '/about.html', '/contact.html'].includes(location.pathname)
 
   return (
     <div className="app-root">
@@ -21,7 +21,7 @@ function App() {
           <Route path="/contact.html" element={<Contact />} />
         </Routes>
       </main>
-      {!hideSite && <footer className="footer">© {new Date().getFullYear()} Rikard Nilsson — <Link to="/contact">Contact me</Link></footer>}
+      {!hideSite && <footer className="footer">© {new Date().getFullYear()} Rikard Nilsson — <Link to="/contact" className="footer-link">Contact me</Link></footer>}
     </div>
   )
 }
